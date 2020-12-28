@@ -1,0 +1,54 @@
+{% extends 'layout.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css"
+    integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+<h1 class="h2">Producer List </h1>
+
+<style>
+    table {
+      font-family: arial, sans-serif;
+      border-collapse: collapse;
+      width: 100%;
+    }
+    
+    td, th {
+      border: 1px solid #dddddd;
+      text-align: center;
+      padding: 8px;
+    }
+    
+    tr:nth-child(even) {
+      background-color: #dddddd;
+    }
+</style>
+<div class="container">
+    <h1>Choose Producer</h1>
+    <table>
+        <th>
+        <td>Name</td>
+        <td> </td>
+        <td >Contact</td>
+        <td></td>
+        <td >Quantity of Food</td>
+        <td> </td>
+        <td >Location</td>
+        </th>
+        {% for producer in producers %}
+        <tr>
+            <td></td>
+            <td>{{producer.name}}</td>
+            <td> </td>
+            <td >{{producer.contact}}</td>
+            <td> </td>
+            <td >       {{producer.foodq}}</td>
+            <td> </td>
+            <td style="text-align: right;"><a class="btn btn-primary btn-lg" href="{{producer.key}}"><i
+                        class="fas fa-map-marker-alt" aria-hidden="true"></i></a></td>
+        </tr>
+        {% endfor %}
+    </table>
+</div>
+{% endblock %}

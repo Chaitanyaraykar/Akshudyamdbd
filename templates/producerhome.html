@@ -1,0 +1,14 @@
+{% extends 'layout.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<h1 class="h2">Dashboard</h1>
+<p>Welcome back, {{ username }}!!</p>
+<form class="form-group" action="{{ url_for('home') }}" method="post">
+    <label for="foodquantity" class="cols-sm-2 control-label">Update food Quantity</label>
+    <input type="text" class="form-control" name="foodquantity" placeholder="Food Quantity" id="foodquantity">
+    <input type="submit" value="submit" class="form-control btn btn-success " name="">
+</form>
+
+{% endblock %}
