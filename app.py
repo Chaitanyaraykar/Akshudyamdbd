@@ -524,7 +524,7 @@ def producer():
     return redirect(url_for('login'))
 
 
-@app.route("/informer")
+@app.route("/inform")
 def inform():
     conn = mysql.connect()
     cursor = conn.cursor(pymysql.cursors.DictCursor)

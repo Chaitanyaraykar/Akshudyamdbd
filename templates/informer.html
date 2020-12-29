@@ -11,7 +11,6 @@
   <link href='https://fonts.googleapis.com/css?family=Oxygen' rel='stylesheet' type='text/css'>
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
   <script type="text/javascript">
-    var x = document.getElementById("demo");
     function getLocation() {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(showPosition);
@@ -19,15 +18,8 @@
       else {
         x.innerHTML = "Geolocation is not supported by this browser.";
       }
-  
-      navigator.geolocation.getCurrentPosition(success => {
-        /* Do some magic. */
-      }, failure => {
-        if (failure.message.startsWith("Only secure origins are allowed")) {
-          // Secure Origin issue.
-        }
-      });
     }
+
   
     function showPosition(position) {
       document.getElementById("rllt").value = position.coords.latitude;
@@ -35,7 +27,7 @@
     }
   </script>
  </head>
- <body style="background-color:#ccc;">
+ <body style="background-image:url('../static/images/informer.jpg');background-size: 1800px 1080px;background-repeat: no-repeat;">
   <nav class="site-header sticky-top py-1">
     <div class="container d-flex flex-column flex-md-row justify-content-between">
       <!-- <a class="py-2" href="{{ url_for('home') }}">
@@ -47,7 +39,7 @@
 <a class="py-2 d-none d-md-inline-block" href="{{ url_for('inform') }}"><i class="fas fa-utensils"></i> Informer</a>
  </div>
   </nav>
- <div class="container">
+ <div class="container" style="background-image:image('static\img\akshudyamimage.jpg')">
    <div class="row main">
     <div class="main-login main-center">
     <h5>Info About a Reciver</h5>
@@ -87,7 +79,6 @@
     </td></tr>
     <tr>
       <td>
-      <p id="demo"></p>
       <div id="msg">{{ msg }}</div>
     </td>
     </tr>
