@@ -1,0 +1,11 @@
+FROM python:alpine3.7 
+COPY . /akshudyamcs
+WORKDIR /akshudyamcs
+RUN pip install -r requirements.txt 
+EXPOSE 5001 
+ENTRYPOINT [ "python" ] 
+CMD [ "app.py" ] 
+
+
+#docker build -d akshudyamcs .
+#docker run --name akshudyamcs -p 5001:5001 akshudyamcs
