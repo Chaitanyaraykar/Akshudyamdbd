@@ -3,11 +3,17 @@ from flask import Flask, request, session, redirect, url_for, render_template
 from flaskext.mysql import MySQL
 import pymysql
 import re
+from user.models import RLocation,OLocation,PLocation
+import pymongo
+import uuid
+import nltk
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+# import pbkdf2_sha256.encrypt()
 
 app = Flask(__name__)
 
 # Change this to your secret key (can be anything, it's for extra protection)
-app.secret_key = 'chaitanyakr'
+app.secret_key = 'chaitanyakr1'
 
 mysql = MySQL()
 
@@ -18,32 +24,33 @@ app.config['MYSQL_DATABASE_DB'] = 'flasksql'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)
 
-
-class RLocation:
-    def __init__(self, key, name, lat, lng):
-        self.key = key
-        self.name = name
-        self.lat = lat
-        self.lng = lng
-
-
-class OLocation():
-    def __init__(self, key, name, lat, lng, contact):
-        self.key = key
-        self.name = name
-        self.lat = lat
-        self.lng = lng
-        self.contact = contact
+client = pymongo.MongoClient('localhost',27017)
+db = client.dbddatabase
+# class RLocation:
+#     def __init__(self, key, name, lat, lng):
+#         self.key = key
+#         self.name = name
+#         self.lat = lat
+#         self.lng = lng
 
 
-class PLocation():
-    def __init__(self, key, name, lat, lng, contact, foodq):
-        self.key = key
-        self.name = name
-        self.lat = lat
-        self.lng = lng
-        self.contact = contact
-        self.foodq = foodq
+# class OLocation():
+#     def __init__(self, key, name, lat, lng, contact):
+#         self.key = key
+#         self.name = name
+#         self.lat = lat
+#         self.lng = lng
+#         self.contact = contact
+
+
+# class PLocation():
+#     def __init__(self, key, name, lat, lng, contact, foodq):
+#         self.key = key
+#         self.name = name
+#         self.lat = lat
+#         self.lng = lng
+#         self.contact = contact
+#         self.foodq = foodq
 
 
 def fetchreceiver():
@@ -524,7 +531,7 @@ def producer():
     return redirect(url_for('login'))
 
 
-@app.route("/inform")
+@app.route("/inform",methods=['GET','POST'])
 def inform():
     conn = mysql.connect()
     cursor = conn.cursor(pymysql.cursors.DictCursor)
@@ -558,6 +565,38 @@ def show_school(school_code):
     else:
         return redirect(url_for('profile'))
 
+
+# @app.route("/show_school/<school_code>")
+# def show_school(school_code):
+#     location_by_key = fetchalllist()
+#     location = location_by_key.get(school_code)
+#     conn = mysql.connect()
+#     cursor = conn.cursor(pymysql.cursors.DictCursor)
+#     msg = ""
+#     if location:
+#         if request.method == 'POST' and 'deletepvrecord' in request.form and 'safetycheckt' in request.form and 'safetycheckf' in request.form :
+#             safetycheckt = request.form['safetycheckt']
+#             safetycheckf = request.form['safetycheckf']
+#             foodcollected = request.form['deletepvrecord']
+#             pid = school_code
+#             vid = session['vid']
+#             if safetycheckt=='true':
+#                 cursor.execute('INSERT INTO pvtable (Pid,Vid,isSafety) VALUES(%s,%s,%s)', (pid, vid, safetycheckt))
+#                 msg = "database updated successfully"
+#                 conn.commit()
+#             if safetycheckf=='false':
+#                 cursor.execute('INSERT INTO pvtable (Pid,Vid,isSafety) VALUES(%s,%s,%s)', (pid, vid, safetycheckf))
+#                 msg = "database updated successfully"
+#                 conn.commit()
+#             if foodcollected == 'true':
+#                 cursor.execute('DELETE FROM pvtable WHERE Pid = %s AND Vid = %s',(pid,vid))
+#             conn.commit()
+
+
+#         return render_template('map.html', school=location )
+#     else:
+#         return redirect(url_for('profile'))
+
 # @app.route("/<orphan_code>")
 # def show_orphanage(orphan_code):
 #     recivers,location_by_key = fetchorphanage()
@@ -566,6 +605,34 @@ def show_school(school_code):
 #         return render_template('map.html', school=orphanageloc)
 #     else:
 #         return redirect(url_for('home'))
+
+
+@app.route('/feedback', methods=['GET', 'POST'])
+def feedback():
+    # Check if user is loggedin
+    if 'loggedin' in session :
+        # User is loggedin show them the home page
+        if request.method == 'POST' and 'feedback' in request.form :
+            # Create variables for easy access
+            rname = request.form['feedback']
+            nltk.downloader.download('vader_lexicon')
+            feedbackofuser = rname
+            sid = SentimentIntensityAnalyzer()
+            ss = sid.polarity_scores(rname)
+            feedbackdict = {}
+            for k in ss:
+                feedbackdict[k] = ss[k]
+            feedbackdicttotal = {}
+            feedbackdicttotal={
+            "_id" : uuid.uuid4().hex,
+            "user": session['username'],
+            "userType": session['person'],
+            "feedback": feedbackofuser ,
+            "feedbacksentiment": feedbackdict
+            }
+            db.userfeedback.insert_one(feedbackdicttotal)
+
+        return render_template('feedback.html')
 
 
 if __name__ == '__main__':

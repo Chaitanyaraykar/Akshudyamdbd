@@ -9,7 +9,7 @@
  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
  </head>
-  <body class="loggedin" style="background-image:url('../static/images/dashboardvolunteer.jpg');background-size: 1920px 1080px;background-repeat: no-repeat;">
+  <body class="loggedin" style="background-image:url('../static/images/dashboardvolunteer.jpg');background-size: 1920px 1080px;">
  <nav class="site-header sticky-top py-1">
       <div class="container d-flex flex-column flex-md-row justify-content-between">
         <a class="py-2" href="{{ url_for('home') }}">
@@ -17,13 +17,29 @@
         </a>
   <a class="py-2 d-none d-md-inline-block" href="{{ url_for('home') }}"><i class="fas fa-home"></i> Home</a>
   <a class="py-2 d-none d-md-inline-block" href="{{ url_for('profile') }}"><i class="fas fa-user-circle"></i> Profile</a>
+  <a class="py-2 d-none d-md-inline-block" href="{{ url_for('feedback') }}"><i class="fas fa-user-circle"></i>Feedback</a>
   <a class="py-2 d-none d-md-inline-block" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
    </div>
     </nav>
+
+
+
+    <!-- <nav class="site-header sticky-top py-2" style="background-color:#000;">
+      <div class="container d-flex flex-column flex-md-row">
+  <a class="py-2 d-none d-md-inline-block nav-link active" href="{{ url_for('home') }}"><i class="fas fa-home"></i>Dashboard</a>
+  <a class="py-2 d-none d-md-inline-block nav-link" href="{{ url_for('producer') }}"><i class="fas fa-utensils"></i> Providers</a>
+  <a class="py-2 d-none d-md-inline-block nav-link" href="{{ url_for('recivers') }}"><i class="fas fa-child"></i> Receivers</a>
+  <a class="py-2 d-none d-md-inline-block nav-link" href="{{ url_for('orphanage') }}"><i class="fas fa-users"></i> Orphanages</a>
+   </div>
+    </nav> -->
+
+
+
+
   
  <div class="container-fluid">
       <div class="row">
-        <nav class="col-md-2 d-none d-md-block sidebar" style="background-color:#5d8da6;">
+        <nav class="col-md-2 d-none d-md-block " style="background-color:#ffffff;height: 1080px;">
           <div class="sidebar-sticky">
             <ul class="nav flex-column">
               <li class="nav-item">
