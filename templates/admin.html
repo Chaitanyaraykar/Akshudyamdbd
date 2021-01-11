@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Login</title>
+  <title>Admin</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet"
@@ -24,23 +24,21 @@
       <a class="py-2 d-none d-md-inline-block" href="{{ url_for('inform') }}"><i class="fas fa-utensils"></i>Informer</a>
     </div>
   </nav>
-  <div class="login-box">
-    <div class="login-header">Volunteer Login</div>
-    <div class="login-body">
-      <p>Please enter your username and password</p>
-      <form class="form-group" action="{{ url_for('login') }}" method="post">
-        <label>Username</label>
-        <input type="text" class="form-control" name="username" placeholder="Username" id="username" required>
-        <label>Password</label>
-        <input type="password" class="form-control" name="password" placeholder="Password" id="password" required>
-        <input type="checkbox" value="checked"><b>Remember</b>
-        <input type="submit" value="Login" class="form-control btn btn-success " name="">
-      </form>
-      <div id="msg">{{ msg }}</div>
-      <p>No account <a href="{{ url_for('register') }}">Register</a></p>
-    </div>
+  <div>
+    <div class="login-box">
+        <div class="login-body">
+          <p>Enter Admin password</p>
+          <form class="form-group" action="{{ url_for('adminpage') }}" method="post">
+            <label>Password</label>
+            <input type="password" class="form-control" name="password" placeholder="Password" id="password" required>
+            <input type="submit" value="Submit" class="form-control btn btn-success " name="">
+          </form>
+          <div id="msg">{{ msg }}</div>
+        </div>
+      </div>
+      <!-- <button href= "{{ url_for('adminreport') }}">Generate Report</button> -->
   </div>
-  <div><br/><br/><a href="{{ url_for('adminpage') }}">Admin</a></div>
+
 </body>
 
 </html>

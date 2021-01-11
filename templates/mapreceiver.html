@@ -58,27 +58,14 @@
     <div>
       <form class="form-group" action="{{ url_for('show_school',school_code = school.key) }}" method="post">
         <table><tr>
-          <td>
-        <label for="quantityoffood">Quantity of food = </label></td><td>
-        <input type="text" pattern="[0-9]+" class="form-control" name="quantityoffood"  id="quantityoffood" required>
-      </td>
-      </tr>
-      <tr><td><label for="deletepvrecord" >Food Collected</label>
+          
+      <tr><td><label for="deletereceiver" >Food Provided</label>
         </td><td>
-          <input type="checkbox" class="form-control" name="deletepvrecord"  id="deletepvrecord" value="1" required>
+          <input type="checkbox" class="form-control" name="deletereceiver"  id="deletereceiver" value="1" required>
         </td></tr>
         <tr><td>
-        <label>Is Food safe?</label>
-      </td>
-        </tr><tr><td>
-        <input type="radio" class="form-control" name="safetycheck" id="safetycheckt" value="true" required>
-        <label for="safetycheckt">YES</label></td><td>
-        <input type="radio" class="form-control" name="safetycheck" id="safetycheckf" value="false" required>
-        <label for="safetycheckf">NO</label></td></tr>
-        <tr><td>
         <input type="submit" value="submit" class="form-control btn btn-success " name="">
-      </td>
-      </tr>
+    </td></tr>
       </table>
       </form>
     </div>

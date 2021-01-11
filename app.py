@@ -1,13 +1,14 @@
 # app.py
-from flask import Flask, request, session, redirect, url_for, render_template
+from flask import Flask, request, session, redirect, url_for, render_template,make_response
 from flaskext.mysql import MySQL
 import pymysql
 import re
-from user.models import RLocation,OLocation,PLocation
+from user.models import RLocation, OLocation, PLocation
 import pymongo
 import uuid
 import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
+import pdfkit
 # import pbkdf2_sha256.encrypt()
 
 app = Flask(__name__)
@@ -24,7 +25,7 @@ app.config['MYSQL_DATABASE_DB'] = 'flasksql'
 app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)
 
-client = pymongo.MongoClient('localhost',27017)
+client = pymongo.MongoClient('localhost', 27017)
 db = client.dbddatabase
 # class RLocation:
 #     def __init__(self, key, name, lat, lng):
@@ -168,6 +169,7 @@ def login():
             session['person'] = 'volunteer'
             session['vid'] = account['vid']
             session['username'] = account['username']
+            session['contact'] = account['email']
             # Redirect to home page
             # return 'Logged in successfully!'
             return redirect(url_for('home'))
@@ -252,6 +254,7 @@ def ologin():
             session['person'] = 'orphanage'
             session['vid'] = account['oid']
             session['username'] = account['oname']
+            session['contact'] = account['ocontact']
             # Redirect to home page
             # return 'Logged in successfully!'
             return redirect(url_for('home'))
@@ -338,6 +341,7 @@ def plogin():
             session['person'] = 'producer'
             session['vid'] = account['pid']
             session['username'] = account['pname']
+            session['contact'] = account['pcontact']
             # Redirect to home page
             # return 'Logged in successfully!'
             return redirect(url_for('home'))
@@ -420,10 +424,10 @@ def home():
                     'INSERT INTO receiver (RECEIVERLAT,RECEIVERLONG,NAME) VALUES(%s,%s,%s)', (rlocationlat, rloclong, rname))
                 conn.commit()
 
-        return render_template('home.html', username=session['username'])
+        return render_template('home.html', username=session)
 
     if 'loggedin' in session and session.get('person') == 'orphanage':
-        return render_template('orphanagehome.html', username=session['username'])
+        return render_template('orphanagehome.html', username=session)
 
     if 'loggedin' in session and session.get('person') == 'producer':
         conn = mysql.connect()
@@ -440,7 +444,7 @@ def home():
                 cursor.execute(
                     'UPDATE producer SET foodquantity = %s WHERE pid = %s', (foodq, pid))
                 conn.commit()
-        return render_template('producerhome.html', username=session['username'])
+        return render_template('producerhome.html', username=session)
     # User is not loggedin redirect to login page
     return redirect(url_for('login'))
 
@@ -531,7 +535,7 @@ def producer():
     return redirect(url_for('login'))
 
 
-@app.route("/inform",methods=['GET','POST'])
+@app.route("/inform", methods=['GET', 'POST'])
 def inform():
     conn = mysql.connect()
     cursor = conn.cursor(pymysql.cursors.DictCursor)
@@ -547,7 +551,8 @@ def inform():
         elif not re.match(r'[0-9]+.[0-9]+', rlocationlat):
             msg = 'latitude should be decimal!'
         else:
-            cursor.execute('INSERT INTO receiver (RECEIVERLAT,RECEIVERLONG,NAME) VALUES(%s,%s,%s)', (rlocationlat, rloclong, rname))
+            cursor.execute(
+                'INSERT INTO receiver (RECEIVERLAT,RECEIVERLONG,NAME) VALUES(%s,%s,%s)', (rlocationlat, rloclong, rname))
             conn.commit()
     return render_template('informer.html', msg=msg)
 
@@ -556,12 +561,99 @@ def inform():
 #     return render_template('reciver.html', schools=schools)
 
 
-@app.route("/<school_code>")
+@app.route("/<school_code>", methods=['GET', 'POST'])
 def show_school(school_code):
     location_by_key = fetchalllist()
     location = location_by_key.get(school_code)
+    conn = mysql.connect()
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    msg = ""
+    safety = 0
     if location:
-        return render_template('map.html', school=location)
+        if int(school_code)< 8000 or int(school_code)>=15000 :
+            if request.method == 'POST' and 'deletereceiver' in request.form:
+                deletereceiver = request.form['deletereceiver']
+                if deletereceiver == '1':
+                    if int(school_code) < 8000:
+                        cursor.execute('delete from receiver where rid = %s',int(school_code))
+                        conn.commit()
+                    elif int(school_code) >14999:
+                        redirect(url_for('profile'))
+                return redirect(url_for('profile'))
+            return render_template('mapreceiver.html', school=location)
+        else:
+            if request.method == 'POST' and 'deletepvrecord' in request.form and 'safetycheck' in request.form and "quantityoffood" in request.form:
+                safetycheck = request.form['safetycheck']
+                foodcollected = request.form['deletepvrecord']
+                pid = school_code
+                vid = session['vid']
+                foodquantity = request.form['quantityoffood']
+                if safetycheck == 'true':
+                    safety = 1
+                    cursor.execute('select pid, vid from pvtable where pid = %s and vid = %s',(pid,vid))
+                    pvtrans = cursor.fetchone()
+                    if not pvtrans:
+                        cursor.execute(
+                            'INSERT INTO pvtable (Pid,Vid,isSafety) VALUES(%s,%s,%s)', (pid, vid, safety))
+                        msg = "database updated successfully"
+                        conn.commit()
+                    else:
+                        cursor.execute('update pvtable set count = count + 1 where pid = %s and vid = %s',(pid,vid))
+                        conn.commit()
+                if safetycheck == 'false':
+                    safety = 0
+                    cursor.execute('select pid, vid from pvtable where pid = %s and vid = %s',(pid,vid))
+                    pvtrans = cursor.fetchone()
+                    if not pvtrans:
+                        cursor.execute(
+                            'INSERT INTO pvtable (Pid,Vid,isSafety) VALUES(%s,%s,%s)', (pid, vid, safety))
+                        msg = "database updated successfully"
+                        conn.commit()
+                    else:
+                        cursor.execute('update pvtable set count = count + 1 where pid = %s and vid = %s',(pid,vid))
+                        conn.commit()
+                if foodcollected == '1':
+                    if session['person'] == 'volunteer':
+                        cursor.execute(
+                            'update accounts set credits = credits + 1 where vid = %s',(session['vid']))
+                        conn.commit() 
+                    cursor.execute("select pname from producer where pid = %s", (pid))
+                    pname = cursor.fetchone()
+                    pname = pname['pname']
+                    cursor.execute("update producer set foodquantity = foodquantity - %s where pid = %s", (foodquantity, pid))
+                    conn.commit()
+                    # write a mongo code to make volunteer list in data base where it has his name, credit,contactno, list of producers with safe or not
+                    # fetch_one(volunteer.vid) if exist then add producer to the producer list or add new volunteer
+                    # add total
+                    
+                    pvtabledict = {"_id": uuid.uuid4().hex,
+                        "vid": session['vid'],
+                        "volunteer name":  session['username'],
+                        "type of user": session['person'],
+                        "contact": session['contact'],
+                        
+                             "producerarr": [{"pid": pid,
+                                            "producername": pname,
+                                            "quantity of food": foodquantity,
+                                            "isFoodsafe": safety}]
+                        
+                        }
+                    db.pvtable.insert_one(pvtabledict)
+                    redirect(url_for('profile'))
+                    # volunteer = {"_id":vid,
+                    #  "volunteer name" : "",
+                    #  "type of user":"volunteer/orphanage",
+                    #  "contact":"email/phonenumber"
+                    # ,producers=[{"pid":"",
+                    #               "producername":"",
+                    #           "quantity of food":"",
+                    #           "isFoodsafe":Bollean},]}
+                    # add a admin account with all the list of recivers,volunteers ,producers,orphanages,
+                    # report of a volunteer for every volunteer
+                    # ,report of total food,
+                    # report of all producers with total food provided
+                    # add total food column in producer and add food to that when it is collected by orphanage or
+            return render_template('map.html', school=location)
     else:
         return redirect(url_for('profile'))
 
@@ -610,9 +702,9 @@ def show_school(school_code):
 @app.route('/feedback', methods=['GET', 'POST'])
 def feedback():
     # Check if user is loggedin
-    if 'loggedin' in session :
+    if 'loggedin' in session:
         # User is loggedin show them the home page
-        if request.method == 'POST' and 'feedback' in request.form :
+        if request.method == 'POST' and 'feedback' in request.form:
             # Create variables for easy access
             rname = request.form['feedback']
             nltk.downloader.download('vader_lexicon')
@@ -623,17 +715,62 @@ def feedback():
             for k in ss:
                 feedbackdict[k] = ss[k]
             feedbackdicttotal = {}
-            feedbackdicttotal={
-            "_id" : uuid.uuid4().hex,
-            "user": session['username'],
-            "userType": session['person'],
-            "feedback": feedbackofuser ,
-            "feedbacksentiment": feedbackdict
+            feedbackdicttotal = {
+                "_id": uuid.uuid4().hex,
+                "user": session['username'],
+                "userType": session['person'],
+                "feedback": feedbackofuser,
+                "feedbacksentiment": feedbackdict
             }
             db.userfeedback.insert_one(feedbackdicttotal)
 
-        return render_template('feedback.html')
+        return render_template('feedback.html', usertype=session['person'])
 
+
+@app.route("/adminreport",methods=['GET','POST'])
+def adminreport():
+    conn = mysql.connect()
+    cursor = conn.cursor(pymysql.cursors.DictCursor)
+    cursor.execute("select count(pid) from producer")
+    producercount = cursor.fetchone()
+    producercount = producercount['count(pid)']
+    cursor.execute("select count(vid) from accounts")
+    volunteercount = cursor.fetchone()
+    volunteercount = volunteercount['count(vid)']
+    cursor.execute("select count(oid) from orphanage")
+    orphanagecount = cursor.fetchone()
+    orphanagecount = orphanagecount['count(oid)']
+    olocations = fetchorphanage()
+    return render_template('adminreport1.html', orphanage=olocations,pc = producercount,vc = volunteercount,oc = orphanagecount)
+    # pdf = pdfkit.from_string(rendered,False)
+    # response = make_response(pdf)
+    # response.headers['Content-Type'] = 'application/pdf'
+    # response.headers['Content-Disposition'] = 'inline; filename=output.pdf'
+    
+
+
+@app.route('/admin',methods=['GET','POST'])
+def adminpage():
+    msg = ""
+    if request.method == 'POST' and 'password' in request.form:
+        password = request.form['password']
+        if password == '1234567890' :
+            msg = 'Go to /adminreport'
+        else:
+            msg = "Incorrect Password"
+
+    return render_template('admin.html',msg = msg)
+
+
+
+@app.route("/adminreportpdf")
+def adminreportpdf():
+    rendered = adminreport()
+    pdf = pdfkit.from_string(rendered,False)
+    response = make_response(pdf)
+    response.headers['Content-Type'] = 'application/pdf'
+    response.headers['Content-Disposition'] = 'attachment; filename=output.pdf'
+    return response
 
 if __name__ == '__main__':
     app.run(debug=True)

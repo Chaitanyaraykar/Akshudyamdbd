@@ -1,36 +1,138 @@
-{% extends 'layout.html' %}
+<!DOCTYPE html>
+<html>
 
-{% block title %}Feedback{% endblock %}
+<head>
+  <meta charset="utf-8">
+  <title>Feedback</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
+  <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet"
+    id="bootstrap-css">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
 
-{% block content %}
-<h1 class="h2">Feedback</h1>
+<body class="loggedin"
+  style="background-image:url('../static/images/dashboardvolunteer.jpg');background-size: 1920px 1080px;">
+  <nav class="site-header sticky-top py-1">
+    <div class="container d-flex flex-column flex-md-row justify-content-between">
+      <a class="py-2" href="{{ url_for('home') }}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="d-block mx-auto">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="14.31" y1="8" x2="20.05" y2="17.94"></line>
+          <line x1="9.69" y1="8" x2="21.17" y2="8"></line>
+          <line x1="7.38" y1="12" x2="13.12" y2="2.06"></line>
+          <line x1="9.69" y1="16" x2="3.95" y2="6.06"></line>
+          <line x1="14.31" y1="16" x2="2.83" y2="16"></line>
+          <line x1="16.62" y1="12" x2="10.88" y2="21.94"></line>
+        </svg>
+      </a>
+      <a class="py-2 d-none d-md-inline-block" href="{{ url_for('home') }}"><i class="fas fa-home"></i> Home</a>
+      <a class="py-2 d-none d-md-inline-block" href="{{ url_for('profile') }}"><i class="fas fa-user-circle"></i>
+        Profile</a>
+      <a class="py-2 d-none d-md-inline-block" href="{{ url_for('feedback') }}"><i
+          class="fas fa-user-circle"></i>Feedback</a>
+      <a class="py-2 d-none d-md-inline-block" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i>
+        Logout</a>
+    </div>
+  </nav>
 
-<div>
-  <!-- <form action="" method="post" autocomplete="off"> 
-      <div class="form-group">
-       <label for="name" class="cols-sm-2 control-label">Receiver's Name</label>
-       <div class="cols-sm-10">
-        <div class="input-group">
-         <span class="input-group-addon"><i class="fas fa-child" aria-hidden="true"></i></span>
-         <input type="text" class="form-control" name="rname" id="rname"  placeholder="Enter the Name"/>
+
+
+  <!-- <nav class="site-header sticky-top py-2" style="background-color:#000;">
+      <div class="container d-flex flex-column flex-md-row">
+  <a class="py-2 d-none d-md-inline-block nav-link active" href="{{ url_for('home') }}"><i class="fas fa-home"></i>Dashboard</a>
+  <a class="py-2 d-none d-md-inline-block nav-link" href="{{ url_for('producer') }}"><i class="fas fa-utensils"></i> Providers</a>
+  <a class="py-2 d-none d-md-inline-block nav-link" href="{{ url_for('recivers') }}"><i class="fas fa-child"></i> Receivers</a>
+  <a class="py-2 d-none d-md-inline-block nav-link" href="{{ url_for('orphanage') }}"><i class="fas fa-users"></i> Orphanages</a>
+   </div>
+    </nav> -->
+
+
+
+
+
+  <div class="container-fluid">
+    <div class="row">
+      {% if usertype == 'producer' %}
+      
+      {% else %}{% if usertype != 'producer' %}
+      <nav class="col-md-2 d-none d-md-block " style="background-color:#ffffff;height: 1080px;">
+        <div class="sidebar-sticky">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link active" href="{{ url_for('home') }}">
+                <i class="fas fa-home"></i>
+                Dashboard <span class="sr-only">(current)</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('producer') }}">
+                <i class="fas fa-utensils"></i>
+                Providers
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('recivers') }}">
+                <i class="fas fa-child"></i>
+                Receivers
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('orphanage') }}">
+                <i class="fas fa-users"></i>
+                Orphanages
+              </a>
+            </li>
+          </ul>
         </div>
-       </div>
-      </div>
-      <div class="form-group">
-        <label for="name" class="cols-sm-2 control-label">Receiver's location</label>
-        <div class="cols-sm-10">
-         <div class="input-group">
-          <span class="input-group-addon"><i class="fas fa-map-marker-alt" aria-hidden="true"></i></span>
-          <input type="text" class="form-control" name="rname" id="rname"  placeholder="Enter location"/>
-         </div>
-        </div>
-       </div>  
-      </form> -->
-  <form class="form-group" action="{{ url_for('feedback') }}" method="post">
-    <label for="feedback" class="cols-sm-2 control-label">Feedback</label>
-    <input type="text" class="form-control" name="feedback" placeholder="Feedback" id="feedback">
+      </nav>
+      {% endif %}
+      {% endif %}
+      
 
-    <input type="submit" value="submit" class="form-control btn btn-success " name="">
-  </form>
-</div>
-{% endblock %}
+      <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+          <div class="col-12">
+            <h1 class="h2">Feedback</h1>
+
+            <div>
+              <!-- <form action="" method="post" autocomplete="off"> 
+                    <div class="form-group">
+                     <label for="name" class="cols-sm-2 control-label">Receiver's Name</label>
+                     <div class="cols-sm-10">
+                      <div class="input-group">
+                       <span class="input-group-addon"><i class="fas fa-child" aria-hidden="true"></i></span>
+                       <input type="text" class="form-control" name="rname" id="rname"  placeholder="Enter the Name"/>
+                      </div>
+                     </div>
+                    </div>
+                    <div class="form-group">
+                      <label for="name" class="cols-sm-2 control-label">Receiver's location</label>
+                      <div class="cols-sm-10">
+                       <div class="input-group">
+                        <span class="input-group-addon"><i class="fas fa-map-marker-alt" aria-hidden="true"></i></span>
+                        <input type="text" class="form-control" name="rname" id="rname"  placeholder="Enter location"/>
+                       </div>
+                      </div>
+                     </div>  
+                    </form> -->
+              <form class="form-group" action="{{ url_for('feedback') }}" method="post">
+                <label for="feedback" class="cols-sm-2 control-label">Feedback</label>
+                <input type="text" class="form-control" name="feedback" placeholder="Feedback" id="feedback">
+
+                <input type="submit" value="submit" class="form-control btn btn-success " name="">
+              </form>
+            </div>
+          </div>
+        </div>
+
+      </main>
+
+    </div>
+  </div>
+
+</body>
+
+</html>

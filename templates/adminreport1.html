@@ -1,0 +1,63 @@
+<html>
+    <style>
+        table {
+          font-family: arial, sans-serif;
+          border-collapse: collapse;
+          width: 100%;
+        }
+        
+        td, th {
+          border: 1px solid #dddddd;
+          text-align: center;
+          padding: 8px;
+        }
+        
+        tr:nth-child(even) {
+          background-color: #dddddd;
+        }
+        div {
+            font-size: larger;
+            text-align: center;
+        }
+    </style>
+    <header>
+        <a href="http://127.0.0.1:5000/"><img src="http://127.0.0.1:5000/static/images/logo.png"></a>
+    </header>
+    <body>
+
+        <div>
+            <div>Volunteer Count = {{vc}}</div> <br/>
+
+            <div>Producer Count = {{pc}}</div> <br/>
+            <div>Orphanage Count = {{oc}}</div>   <br/>
+
+            <div style="text-align: left;">Orphanage List</div>
+            <br/>
+
+        <table>
+            <th>
+            <td>Name</td>
+            <td> </td>
+            <td >Contact</td>
+            <td> </td>
+            <td >Latitude</td>
+            <td >Longitude</td>
+            </th>
+            {% for orphan in orphanage %}
+            <tr>
+                <td></td>
+                <td>{{orphan.name}}</td>
+                <td> </td>
+                <td >{{orphan.contact}}</td>
+                <td> </td>
+                <td>{{orphan.lat}}</td>
+                <td>{{orphan.lng}}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <br/>
+    <br/>
+    <a href="http://127.0.0.1:5000/adminreportpdf">Generate Report</a>
+    </body>
+</html>
