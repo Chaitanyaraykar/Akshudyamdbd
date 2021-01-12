@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="utf-8">
-  <title>Feedback</title>
+  <title>blog</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.1/css/all.css">
   <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet"
@@ -97,7 +97,8 @@
       <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
         <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
           <div class="col-12">
-            <h1 class="h2">Feedback</h1>
+            <h1 class="h2">Blog Post</h1>
+            <br/>
 
             <div>
               <!-- <form action="" method="post" autocomplete="off"> 
@@ -120,14 +121,29 @@
                       </div>
                      </div>  
                     </form> -->
-              <form class="form-group" action="{{ url_for('feedback') }}" method="post">
-                <label for="feedback" class="cols-sm-2 control-label">Feedback</label>
-                <input type="text" class="form-control" name="feedback" placeholder="Feedback" id="feedback">
+              <form class="form-group" action="{{ url_for('blog') }}" method="post">
+                <input type="text" class="form-control" name="title" id="title"  placeholder="Enter Title" required/>
+                <br/>
+
+                <textarea type="text" class="form-control" rows="4" cols="50" name="blog" placeholder="Write your Blog here" minlength="10" id="blog" required></textarea>
+                <br/><br/>
+
 
                 <input type="submit" value="submit" class="form-control btn btn-success " name="">
               </form>
             </div>
+            <div>
+              <table >
+                {% for blogq in blogs%}
+                <tr style="background-color: #cdcdcd; padding: 10px; border: black 2px solid;"><td><h1>{{blogq.title}}</h1> -by {{blogq.user}} </td></tr>
+                <br/>
+                <tr style="background-color: #cdcdcd; padding: 10px; border: black 2px solid;"><td>Post : {{blogq.blog}}</td></tr>
+                <tr><td><br/></td></tr>
+                {% endfor %}
+              </table>
+            </div>
           </div>
+          
         </div>
 
       </main>

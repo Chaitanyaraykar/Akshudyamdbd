@@ -7,6 +7,7 @@ class RLocation:
         self.name = name
         self.lat = lat
         self.lng = lng
+        self.contact = ""
 
 
 class OLocation():
@@ -26,6 +27,11 @@ class PLocation():
         self.lng = lng
         self.contact = contact
         self.foodq = foodq
+
+class Blog():
+    def __init__(self, user, blog):
+        self.user = user
+        self.blog = blog
 
 
 # class PVinfo:

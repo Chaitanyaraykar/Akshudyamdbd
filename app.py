@@ -9,6 +9,7 @@ import uuid
 import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import pdfkit
+import math
 # import pbkdf2_sha256.encrypt()
 
 app = Flask(__name__)
@@ -632,14 +633,14 @@ def show_school(school_code):
                         "type of user": session['person'],
                         "contact": session['contact'],
                         
-                             "producerarr": [{"pid": pid,
+                             "producerarr": {"pid": pid,
                                             "producername": pname,
                                             "quantity of food": foodquantity,
-                                            "isFoodsafe": safety}]
+                                            "isFoodsafe": safety}
                         
-                        }
+                    }
                     db.pvtable.insert_one(pvtabledict)
-                    redirect(url_for('profile'))
+                    redirect(url_for('recivers'))
                     # volunteer = {"_id":vid,
                     #  "volunteer name" : "",
                     #  "type of user":"volunteer/orphanage",
@@ -741,7 +742,9 @@ def adminreport():
     orphanagecount = cursor.fetchone()
     orphanagecount = orphanagecount['count(oid)']
     olocations = fetchorphanage()
-    return render_template('adminreport1.html', orphanage=olocations,pc = producercount,vc = volunteercount,oc = orphanagecount)
+    cursor.execute("select sum(count) from pvtable")
+    pvcount = cursor.fetchone()
+    return render_template('adminreport1.html', orphanage=olocations,pc = producercount,vc = volunteercount,oc = orphanagecount, pv = pvcount)
     # pdf = pdfkit.from_string(rendered,False)
     # response = make_response(pdf)
     # response.headers['Content-Type'] = 'application/pdf'
@@ -771,6 +774,29 @@ def adminreportpdf():
     response.headers['Content-Type'] = 'application/pdf'
     response.headers['Content-Disposition'] = 'attachment; filename=output.pdf'
     return response
+
+@app.route('/blog', methods=['GET', 'POST'])
+def blog():
+    # Check if user is loggedin
+    if 'loggedin' in session:
+        # User is loggedin show them the home page
+        if request.method == 'POST' and 'blog' in request.form and 'title' in request.form:
+            # Create variables for easy access
+            blogofuser = request.form['blog']
+            title = request.form['title']
+            blogdicttotal = {}
+            blogdicttotal = {
+                "_id": uuid.uuid4().hex,
+                "user": session['username'],
+                "title": title,
+                "blog": blogofuser
+            }
+            db.userblog.insert_one(blogdicttotal)
+        allblogs = list(db.userblog.find())
+        # for doc in allblogs:
+        #     bloglist = doc['blog']
+
+        return render_template('blog.html', usertype=session['person'], blogs = allblogs)
 
 if __name__ == '__main__':
     app.run(debug=True)
