@@ -654,6 +654,7 @@ def show_school(school_code):
                     # ,report of total food,
                     # report of all producers with total food provided
                     # add total food column in producer and add food to that when it is collected by orphanage or
+            redirect(url_for('recivers'))
             return render_template('map.html', school=location)
     else:
         return redirect(url_for('profile'))
@@ -744,7 +745,8 @@ def adminreport():
     olocations = fetchorphanage()
     cursor.execute("select sum(count) from pvtable")
     pvcount = cursor.fetchone()
-    return render_template('adminreport1.html', orphanage=olocations,pc = producercount,vc = volunteercount,oc = orphanagecount, pv = pvcount)
+    pvcount1 = pvcount['sum(count)']
+    return render_template('adminreport1.html', orphanage=olocations,pc = producercount,vc = volunteercount,oc = orphanagecount, pv = pvcount1)
     # pdf = pdfkit.from_string(rendered,False)
     # response = make_response(pdf)
     # response.headers['Content-Type'] = 'application/pdf'
