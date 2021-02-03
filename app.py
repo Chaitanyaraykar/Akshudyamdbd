@@ -591,28 +591,46 @@ def show_school(school_code):
                 foodquantity = request.form['quantityoffood']
                 if safetycheck == 'true':
                     safety = 1
-                    cursor.execute('select pid, vid from pvtable where pid = %s and vid = %s',(pid,vid))
-                    pvtrans = cursor.fetchone()
+                    cursor.execute('select pid from pvtable where pid = %s and vid = %s',(pid,vid))
+                    pvtrans1 = cursor.fetchone()
+                    cursor.execute('select pid from optable where pid = %s and oid = %s',(pid,vid))
+                    pvtrans2 = cursor.fetchone()
+                    pvtrans = pvtrans1 or pvtrans2
                     if not pvtrans:
-                        cursor.execute(
-                            'INSERT INTO pvtable (Pid,Vid,isSafety) VALUES(%s,%s,%s)', (pid, vid, safety))
-                        msg = "database updated successfully"
-                        conn.commit()
+                        if session['person'] == 'orphanage':
+                            cursor.execute('INSERT INTO optable (pid,oid,isSafetyo) VALUES(%s,%s,%s)', (pid, vid, safety))
+                            msg = "database updated successfully"
+                            conn.commit()
+                        else:
+                            cursor.execute('INSERT INTO pvtable (Pid,Vid,isSafety) VALUES(%s,%s,%s)', (pid, vid, safety))
+                            msg = "database updated successfully"
+                            conn.commit()
                     else:
                         cursor.execute('update pvtable set count = count + 1 where pid = %s and vid = %s',(pid,vid))
                         conn.commit()
                 if safetycheck == 'false':
                     safety = 0
-                    cursor.execute('select pid, vid from pvtable where pid = %s and vid = %s',(pid,vid))
-                    pvtrans = cursor.fetchone()
+                    cursor.execute('select pid from pvtable where pid = %s and vid = %s',(pid,vid))
+                    pvtrans1 = cursor.fetchone()
+                    cursor.execute('select pid from optable where pid = %s and oid = %s',(pid,vid))
+                    pvtrans2 = cursor.fetchone()
+                    pvtrans = pvtrans1 or pvtrans2
                     if not pvtrans:
-                        cursor.execute(
-                            'INSERT INTO pvtable (Pid,Vid,isSafety) VALUES(%s,%s,%s)', (pid, vid, safety))
-                        msg = "database updated successfully"
-                        conn.commit()
+                        if session['person'] == 'orphanage':
+                            cursor.execute('INSERT INTO optable (pid,oid,isSafetyo) VALUES(%s,%s,%s)', (pid, vid, safety))
+                            msg = "database updated successfully"
+                            conn.commit()
+                        else:
+                            cursor.execute('INSERT INTO pvtable (Pid,Vid,isSafety) VALUES(%s,%s,%s)', (pid, vid, safety))
+                            msg = "database updated successfully"
+                            conn.commit()
                     else:
-                        cursor.execute('update pvtable set count = count + 1 where pid = %s and vid = %s',(pid,vid))
-                        conn.commit()
+                        if session['person'] == 'orphanage':
+                            cursor.execute('update optable set count = count + 1 where pid = %s and oid = %s',(pid,vid))
+                            conn.commit()
+                        else:   
+                            cursor.execute('update pvtable set count = count + 1 where pid = %s and vid = %s',(pid,vid))
+                            conn.commit()
                 if foodcollected == '1':
                     if session['person'] == 'volunteer':
                         cursor.execute(
