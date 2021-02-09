@@ -18,11 +18,102 @@
   <a class="py-2 d-none d-md-inline-block" href="{{ url_for('home') }}"><i class="fas fa-home"></i> Home</a>
   <a class="py-2 d-none d-md-inline-block" href="{{ url_for('profile') }}"><i class="fas fa-user-circle"></i> Profile</a>
   <a class="py-2 d-none d-md-inline-block" href="{{ url_for('feedback') }}"><i class="fas fa-user-circle"></i>Feedback</a>
+  <a class="py-2 d-none d-md-inline-block" href="{{ url_for('blog') }}"><i class="fas fa-user-circle"></i>Blog</a>
   <a class="py-2 d-none d-md-inline-block" href="{{ url_for('logout') }}"><i class="fas fa-sign-out-alt"></i> Logout</a>
    </div>
     </nav>
   
- <div class="container-fluid">
+    <div class="container-fluid">
+      <div class="row">
+        <nav class="col-md-2 d-none d-md-block " style="background-color:#ffffff;height: 1080px;">
+          <div class="sidebar-sticky">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link active" href="{{ url_for('home') }}">
+                  <i class="fas fa-home"></i>
+                  Dashboard <span class="sr-only">(current)</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('recivers') }}">
+                  <i class="fas fa-child"></i>
+                  Receivers
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('orphanage') }}">
+                  <i class="fas fa-users"></i>
+                  Orphanages
+                </a>
+              </li>
+            </ul>
+   </div>
+        </nav>
+ 
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+            <div class="col-12">
+              <style>
+                table {
+                  font-family: arial, sans-serif;
+                  border-collapse: collapse;
+                  width: 100%;
+                }
+                
+                td, th {
+                  border: 1px solid #dddddd;
+                  text-align: center;
+                  padding: 8px;
+                }
+                
+                tr:nth-child(even) {
+                  background-color: #dddddd;
+                }
+            </style>
+            <h1>Profile Page</h1>
+            <div>
+                <p>Your account details are below:</p>
+                <table>
+            
+                    <tr>
+                        <td>Username:</td>
+                        <td>{{ account['pname'] }}</td>
+                    </tr>
+            
+                    <tr>
+                        <td>Contact:</td>
+                        <td>{{ account['pcontact'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Location (Latitude):</td>
+                        <td>{{ account['platitude'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Location (Longitude):</td>
+                        <td>{{ account['plongitude'] }}</td>
+                    </tr>
+                    <tr>
+                        <td>Food Quantity:</td>
+                        <td>{{ account['foodquantity'] }} kg</td>
+                    </tr>
+                    <tr>
+                      <td>Food Type:</td>
+                      <td>{{ account['itemname'] }}</td>
+                  </tr>
+                </table>
+            </div>
+       
+    
+  </div>
+   </div>
+  
+   </main>
+    
+      </div>
+    </div>
+
+
+ <!-- <div class="container-fluid">
       <div class="row"> 
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
@@ -70,6 +161,10 @@
                             <td>Food Quantity:</td>
                             <td>{{ account['foodquantity'] }} kg</td>
                         </tr>
+                        <tr>
+                          <td>Food Type:</td>
+                          <td>{{ account['itemname'] }}</td>
+                      </tr>
                     </table>
                 </div>
   </div>
@@ -78,7 +173,7 @@
    </main>
     
       </div>
-    </div>
+    </div> -->
   
  </body>
 </html>

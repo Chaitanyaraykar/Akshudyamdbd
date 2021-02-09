@@ -58,7 +58,30 @@
   <div class="container-fluid">
     <div class="row">
       {% if usertype == 'producer' %}
-      
+      <nav class="col-md-2 d-none d-md-block " style="background-color:#ffffff;height: 1080px;">
+        <div class="sidebar-sticky">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link active" href="{{ url_for('home') }}">
+                <i class="fas fa-home"></i>
+                Dashboard <span class="sr-only">(current)</span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('recivers') }}">
+                <i class="fas fa-child"></i>
+                Receivers
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('orphanage') }}">
+                <i class="fas fa-users"></i>
+                Orphanages
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
       {% else %}{% if usertype != 'producer' %}
       <nav class="col-md-2 d-none d-md-block " style="background-color:#ffffff;height: 1080px;">
         <div class="sidebar-sticky">
@@ -125,7 +148,7 @@
                 <input type="text" class="form-control" name="title" id="title"  placeholder="Enter Title" required/>
                 <br/>
 
-                <textarea type="text" class="form-control" rows="4" cols="50" name="blog" placeholder="Write your Blog here" minlength="10" id="blog" required></textarea>
+                <textarea type="text" class="form-control" rows="4" cols="50" name="blog" placeholder="Write your Blog here" minlength="50" id="blog" required></textarea>
                 <br/><br/>
 
 

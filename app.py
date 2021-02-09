@@ -11,6 +11,7 @@ from nltk.sentiment.vader import SentimentIntensityAnalyzer
 import pdfkit
 import math
 # import pbkdf2_sha256.encrypt()
+#from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 
@@ -157,6 +158,7 @@ def login():
         # Create variables for easy access
         username = request.form['username']
         password = request.form['password']
+        #check_password_hash(passwordfromsql,passwordentered)
         # Check if account exists using MySQL
         cursor.execute(
             'SELECT * FROM accounts WHERE username = %s AND password = %s', (username, password))
@@ -176,7 +178,7 @@ def login():
             return redirect(url_for('home'))
         else:
             # Account doesnt exist or username/password incorrect
-            msg = 'Incorrect username/password!'
+            msg = 'Account doesn\'t exist or Incorrect username/password!'
 
     return render_template('index.html', msg=msg)
 
@@ -200,7 +202,7 @@ def register():
         email = request.form['email']
         dateofbirth = request.form['dateofbirth']
         gender = request.form['gender']
-
+        #hashedpassword = generate_password_hash(password,method='sha256')
     # Check if account exists using MySQL
         cursor.execute(
             'SELECT * FROM accounts WHERE username = %s', (username))
@@ -208,10 +210,12 @@ def register():
         # If account exists show error and validation checks
         if account:
             msg = 'Account already exists!'
-        elif not re.match(r'[^@]+@[^@]+\.[^@]+', email):
+        elif not re.match(r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)", email):
             msg = 'Invalid email address!'
         elif not re.match(r'[A-Za-z0-9]+', username):
             msg = 'Username must contain only characters and numbers!'
+        elif not re.match(r'[A-Za-z]+', fullname):
+            msg = 'Username must contain only characters'
         elif not username or not password or not email:
             msg = 'Please fill out the form!'
         else:
@@ -219,7 +223,8 @@ def register():
             cursor.execute('INSERT INTO accounts (fullname, username, password, email, gender, dateofbirth) VALUES(%s, %s, %s, %s, %s,%s)',
                            (fullname, username, password, email, gender, dateofbirth))
             conn.commit()
-
+        #hashedpassword = generate_password_hash(password,method='sha256')
+        #check_password_hash(passwordfromsql,passwordentered) use this condition to check if the password is correct or not in login system
             msg = 'You have successfully registered!'
     elif request.method == 'POST':
         # Form is empty... (no POST data)
@@ -261,7 +266,7 @@ def ologin():
             return redirect(url_for('home'))
         else:
             # Account doesnt exist or username/password incorrect
-            msg = 'Incorrect username/password!'
+            msg = 'Account doesn\'t exist or Incorrect username/password!'
 
     return render_template('ologin.html', msg=msg)
 
@@ -293,9 +298,9 @@ def oregister():
             msg = 'Account already exists!'
         elif not re.match(r'[A-Za-z0-9]+', oname):
             msg = 'Username must contain only characters and numbers!'
-        elif not re.match(r'[0-9]+.[0-9]+', olocationlong):
+        elif not re.match(r'^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,6})?))$', olocationlong):
             msg = 'longitude should be decimal!'
-        elif not re.match(r'[0-9]+.[0-9]+', olocationlat):
+        elif not re.match(r'^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$', olocationlat):
             msg = 'latitude should be decimal!'
         elif not re.match(r'\d{3}[-\.\s]??\d{3}[-\.\s]??\d{4}|\(\d{3}\)\s*\d{3}[-\.\s]??\d{4}|\d{3}[-\.\s]??\d{4}', contact):
             msg = 'give valid contact!'
@@ -348,7 +353,7 @@ def plogin():
             return redirect(url_for('home'))
         else:
             # Account doesnt exist or username/password incorrect
-            msg = 'Incorrect username/password!'
+            msg = 'Account doesn\'t exist or Incorrect username/password!'
 
     return render_template('plogin.html', msg=msg)
 
@@ -380,9 +385,9 @@ def pregister():
             msg = 'Account already exists!'
         elif not re.match(r'[A-Za-z0-9]+', pname):
             msg = 'Username must contain only characters and numbers!'
-        elif not re.match(r'[0-9]+.[0-9]+', plocationlong):
+        elif not re.match(r'^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,6})?))$', plocationlong):
             msg = 'longitude should be decimal!'
-        elif not re.match(r'[0-9]+.[0-9]+', plocationlat):
+        elif not re.match(r'^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$', plocationlat):
             msg = 'latitude should be decimal!'
         elif not re.match(r'\d{3}[-\.\s]??\d{3}[-\.\s]??\d{4}|\(\d{3}\)\s*\d{3}[-\.\s]??\d{4}|\d{3}[-\.\s]??\d{4}', contact):
             msg = 'give valid contact!'
@@ -416,16 +421,17 @@ def home():
             rname = request.form['Receivername']
             rlocationlat = request.form['rllt']
             rloclong = request.form['rllg']
-            if not re.match(r'[0-9]+.[0-9]+', rloclong):
-                msg = 'longitude should be decimal!'
-            elif not re.match(r'[0-9]+.[0-9]+', rlocationlat):
-                msg = 'latitude should be decimal!'
+
+            if not re.match(r'^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,6})?))$', rloclong):
+                msg = 'Enter a valid longitude!'
+            elif not re.match(r'^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$', rlocationlat):
+                msg = 'Enter a valid latitude!'
             else:
                 cursor.execute(
                     'INSERT INTO receiver (RECEIVERLAT,RECEIVERLONG,NAME) VALUES(%s,%s,%s)', (rlocationlat, rloclong, rname))
                 conn.commit()
 
-        return render_template('home.html', username=session)
+        return render_template('home.html', username=session,msg=msg)
 
     if 'loggedin' in session and session.get('person') == 'orphanage':
         return render_template('orphanagehome.html', username=session)
@@ -435,17 +441,23 @@ def home():
         cursor = conn.cursor(pymysql.cursors.DictCursor)
         msg = ''
         # User is loggedin show them the home page
-        if request.method == 'POST' and 'foodquantity' in request.form:
+        if request.method == 'POST' and 'foodquantity' in request.form and 'foodtype' in request.form:
             # Create variables for easy access
             foodq = request.form['foodquantity']
+            foodtype = request.form['foodtype']
             pid = session['vid']
             if not re.match(r'[0-9]+', foodq):
                 msg = 'Food quantiy should be number in kgs!'
+            elif not re.match(r'[qwertyuiopasdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM]+',foodtype):
+                msg = 'Enter a valid food type'
             else:
+                msg = "Entered successfully"
                 cursor.execute(
                     'UPDATE producer SET foodquantity = %s WHERE pid = %s', (foodq, pid))
+                cursor.execute(
+                    'UPDATE producer SET itemname = %s WHERE pid = %s', (foodtype, pid))
                 conn.commit()
-        return render_template('producerhome.html', username=session)
+        return render_template('producerhome.html', username=session,msg=msg)
     # User is not loggedin redirect to login page
     return redirect(url_for('login'))
 
@@ -547,10 +559,12 @@ def inform():
         rname = request.form['Receivername']
         rlocationlat = request.form['rllt']
         rloclong = request.form['rllg']
-        if not re.match(r'[0-9]+.[0-9]+', rloclong):
+        if not re.match(r'^(\+|-)?(?:180(?:(?:\.0{1,6})?)|(?:[0-9]|[1-9][0-9]|1[0-7][0-9])(?:(?:\.[0-9]{1,6})?))$', rloclong):
             msg = 'longitude should besdecimal!'
-        elif not re.match(r'[0-9]+.[0-9]+', rlocationlat):
+        elif not re.match(r'^(\+|-)?(?:90(?:(?:\.0{1,6})?)|(?:[0-9]|[1-8][0-9])(?:(?:\.[0-9]{1,6})?))$', rlocationlat):
             msg = 'latitude should be decimal!'
+        elif not re.match(r'[qwertyuiopsdfghjklzxcvbnmQWERTYUIOPASDFGHJKLZXCVBNM]+', rname):
+            msg = 'Username must contain only characters'
         else:
             cursor.execute(
                 'INSERT INTO receiver (RECEIVERLAT,RECEIVERLONG,NAME) VALUES(%s,%s,%s)', (rlocationlat, rloclong, rname))
@@ -589,6 +603,12 @@ def show_school(school_code):
                 pid = school_code
                 vid = session['vid']
                 foodquantity = request.form['quantityoffood']
+                cursor.execute('select foodquantity from producer where pid = %s',(pid))
+                currentfq = cursor.fetchone()
+                currentfq = currentfq['foodquantity']
+                if int(foodquantity) < int(currentfq):
+                    msg = "Food collected is more than what is present"
+                    return redirect(url_for('profile'))
                 if safetycheck == 'true':
                     safety = 1
                     cursor.execute('select pid from pvtable where pid = %s and vid = %s',(pid,vid))
@@ -673,7 +693,7 @@ def show_school(school_code):
                     # report of all producers with total food provided
                     # add total food column in producer and add food to that when it is collected by orphanage or
             redirect(url_for('recivers'))
-            return render_template('map.html', school=location)
+            return render_template('map.html', school=location , msg = msg)
     else:
         return redirect(url_for('profile'))
 

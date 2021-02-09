@@ -23,7 +23,61 @@
    </div>
     </nav>
 
- <div class="container-fluid">
+
+
+    <div class="container-fluid">
+      <div class="row">
+        <nav class="col-md-2 d-none d-md-block " style="background-color:#ffffff;height: 1080px;">
+          <div class="sidebar-sticky">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link active" href="{{ url_for('home') }}">
+                  <i class="fas fa-home"></i>
+                  Dashboard <span class="sr-only">(current)</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('recivers') }}">
+                  <i class="fas fa-child"></i>
+                  Receivers
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('orphanage') }}">
+                  <i class="fas fa-users"></i>
+                  Orphanages
+                </a>
+              </li>
+            </ul>
+   </div>
+        </nav>
+ 
+        <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
+          <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
+            <div class="col-12">
+              <h1 class="h2">Dashboard</h1>
+              <p>Welcome back, {{ username.username }}!!</p>
+              <form class="form-group" action="{{ url_for('home') }}" method="post">
+                  <label for="foodquantity" class="cols-sm-2 control-label">Add food Quantity</label>
+                  <input type="number" class="form-control" name="foodquantity" placeholder="Food Quantity" id="foodquantity">
+                  <label for="foodtype" class="cols-sm-2 control-label">Food Type</label>
+                  <input type="text" class="form-control" name="foodtype" placeholder="Food Type" id="foodquantity">
+                  <p>{{msg}}</p>
+                  <input type="submit" value="submit" class="form-control btn btn-success " name="">
+              </form>
+       
+    
+  </div>
+   </div>
+  
+   </main>
+    
+      </div>
+    </div>
+
+
+    
+ <!-- <div class="container-fluid">
       <div class="row">
         <main role="main" class="col-md-9 ml-sm-auto col-lg-10 pt-3 px-4">
           <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pb-2 mb-3 border-bottom">
@@ -32,7 +86,10 @@
                 <p>Welcome back, {{ username.username }}!!</p>
                 <form class="form-group" action="{{ url_for('home') }}" method="post">
                     <label for="foodquantity" class="cols-sm-2 control-label">Add food Quantity</label>
-                    <input type="text" class="form-control" name="foodquantity" placeholder="Food Quantity" id="foodquantity">
+                    <input type="number" class="form-control" name="foodquantity" placeholder="Food Quantity" id="foodquantity">
+                    <label for="foodtype" class="cols-sm-2 control-label">Food Type</label>
+                    <input type="text" class="form-control" name="foodtype" placeholder="Food Type" id="foodquantity">
+                    <p>{{msg}}</p>
                     <input type="submit" value="submit" class="form-control btn btn-success " name="">
                 </form>
        
@@ -43,7 +100,7 @@
    </main>
     
       </div>
-    </div>
+    </div> -->
   
  </body>
 </html>
